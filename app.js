@@ -27,26 +27,37 @@ app.get("/api/hello", function (req, res) {
 
 // timestamp api endpoint
 app.get("/api/timestamp/:date?", function (req, res) {
-  if(Number(req.params.date)) {
+  let date = req.params.date;
 
-    let date = new Date(parseInt(req.params.date));
-    res.json({
-      unix: date.getTime(),
-      utc: date.toUTCString()
-    });
-  } else if(req.params.date) {
-
-    date = new Date(req.params.date);
-    res.json({
-      unix: date.getTime(),
-      utc: date.toUTCString()
-    });
-  } else {
+  if(!date) {
     date = new Date();
     res.json({
       unix: date.getTime(),
       utc: date.toUTCString()
-    })
+    });
+  }
+
+  else if (isNaN(date) && new Date(date).toDateString() !== "Invalid Date") {
+    date = new Date(date);
+    res.json({
+      unix: date.getTime(),
+      utc: date.toUTCString()
+    });
+  }
+
+  else if(isNaN(date) === false && new Date(Number(date)).toDateString() !== "Invalid Date") {
+    date = new Date(Number(date));
+    res.json({
+      unix: date.getTime(),
+      utc: date.toDateString()
+    });
+  }
+
+  else {
+    res.json({
+      unix: "null",
+      utc: "null"
+    });
   }
 
 });
@@ -55,5 +66,5 @@ app.get("/api/timestamp/:date?", function (req, res) {
 
 // listen for requests :)
 app.listen(PORT, function () {
-  console.log('Your app is listening on port ', PORT);
+  console.log('Your app is listening on port', PORT);
 });
